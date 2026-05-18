@@ -1,53 +1,70 @@
 # 00wallpaper
 
-基于 `uni-app + Vue 3 setup` 的壁纸项目，已经改造成：
+基于 `uni-app + Vue 3 setup` 的壁纸项目。
 
-- 前端通过 GitHub Actions 自动构建
-- H5 自动部署到 GitHub Pages
-- 通过独立 Node 代理解决浏览器跨域取数问题
+当前仓库已经支持：
 
-## 在线访问
+- 原始 `HBuilderX` 开发运行方式
+- 在线网站直接体验
+- GitHub Actions 自动构建并部署到 GitHub Pages
+- 通过独立 Node 代理解决 H5 浏览器跨域取数问题
 
-- 前端站点：
-  `https://cc00mi.github.io/00wallpaper/`
-- 代理服务：
-  `https://00wallpaper-production.up.railway.app/api/bizhi`
+## 运行方式
 
-你可以直接访问前端站点体验页面效果。
+## 1. 在 HBuilderX 中运行
 
-## 两种运行方式
+这是保留原项目习惯的运行方式，适合本地开发、调试和继续二次开发。
 
-## 方式一：直接访问已部署版本
+### 步骤
 
-适合只想体验，不想自己部署的人。
+1. 用 `HBuilderX` 打开项目根目录
+2. 安装依赖
+3. 根据你的需要运行到：
+   - 浏览器
+   - 小程序模拟器
+   - App
 
-直接打开：
+### 接口说明
 
-- `https://cc00mi.github.io/00wallpaper/`
+原项目接口来自：
 
-## 方式二：自己完整部署
+- `https://tea.qingnian8.com/api/bizhi`
 
-适合想复刻一套自己的 GitHub Pages + 代理服务的人。
+原始请求入口在：
 
-完整流程分两部分：
+- [src/utils/request.js](C:/Users/陈铃/Documents/Codex/2026-05-12/files-mentioned-by-the-user-f76aaebcc10b10007caea90579a2dfa5-4/target_repo/src/utils/request.js)
 
-1. 部署前端到 GitHub Pages
-2. 部署代理到 Railway
+如果不配置 H5 代理地址，项目会继续按原逻辑直连上游接口。
 
 ---
 
-## 前端部署到 GitHub Pages
+## 2. 直接在线网站体验
 
-### 1. 准备仓库
+点击即可访问：
 
-确保仓库里已经有：
+- [在线体验 00wallpaper](https://cc00mi.github.io/00wallpaper/)
 
-- `src/`
-- `package.json`
-- `vite.config.js`
-- `.github/workflows/deploy.yml`
+当前线上版本通过：
 
-### 2. 配置 GitHub Pages
+- GitHub Pages 托管前端
+- Railway 托管代理
+
+代理地址是：
+
+- `https://00wallpaper-production.up.railway.app/api/bizhi`
+
+---
+
+## 3. 自己部署一套
+
+如果你想复刻自己的线上版本，需要两部分：
+
+1. 前端部署到 GitHub Pages
+2. 代理部署到 Railway
+
+## 3.1 前端部署到 GitHub Pages
+
+### GitHub Pages 设置
 
 进入：
 
@@ -61,7 +78,7 @@ Settings -> Pages
 GitHub Actions
 ```
 
-### 3. 配置前端代理地址变量
+### 配置构建变量
 
 进入：
 
@@ -69,7 +86,7 @@ GitHub Actions
 Settings -> Secrets and variables -> Actions -> Variables
 ```
 
-新增变量：
+新增：
 
 ```text
 VITE_API_BASE_URL=https://你的代理域名/api/bizhi
@@ -81,24 +98,26 @@ VITE_API_BASE_URL=https://你的代理域名/api/bizhi
 VITE_API_BASE_URL=https://00wallpaper-production.up.railway.app/api/bizhi
 ```
 
-### 4. 触发构建
+### 自动部署工作流
 
-推送代码到 `main`，或者在 Actions 页面手动 `Re-run`。
+工作流文件在：
 
-构建完成后，GitHub Pages 会自动发布。
+- [.github/workflows/deploy.yml](C:/Users/陈铃/Documents/Codex/2026-05-12/files-mentioned-by-the-user-f76aaebcc10b10007caea90579a2dfa5-4/target_repo/.github/workflows/deploy.yml)
+
+推送到 `main` 后会自动触发构建和发布。
 
 ---
 
-## 代理服务部署到 Railway
+## 3.2 代理部署到 Railway
 
-### 1. 选择仓库
+### 选择仓库
 
-在 Railway 里选择：
+在 Railway 中：
 
-- `Deploy from GitHub repo`
-- 选择仓库 `cc00mi/00wallpaper`
+1. 选择 `Deploy from GitHub repo`
+2. 选择仓库 `cc00mi/00wallpaper`
 
-### 2. 设置 Root Directory
+### 设置 Root Directory
 
 必须设置为：
 
@@ -106,11 +125,11 @@ VITE_API_BASE_URL=https://00wallpaper-production.up.railway.app/api/bizhi
 proxy-server
 ```
 
-因为真正的代理服务不在仓库根目录，而在这个子目录下。
+因为真正的代理服务在这个子目录下，不在仓库根目录。
 
-### 3. 配置 Railway 变量
+### 配置 Railway 变量
 
-建议至少配置这几个：
+至少配置：
 
 ```text
 ALLOWED_ORIGIN=https://cc00mi.github.io
@@ -120,9 +139,9 @@ TARGET_PREFIX=/api/bizhi
 PROXY_PREFIX=/api/bizhi
 ```
 
-### 4. 生成公网域名
+### 生成公网域名
 
-Railway 部署成功后，生成一个公网域名，格式类似：
+Railway 部署成功后，生成一个公网地址，格式类似：
 
 ```text
 https://xxxx.up.railway.app
@@ -131,14 +150,18 @@ https://xxxx.up.railway.app
 注意：
 
 - `railway.internal` 是内网地址
-- 浏览器和 GitHub Pages 不能用它
-- 必须使用 Railway 给的公网域名
+- 不能给浏览器和 GitHub Pages 使用
+- 必须使用 Railway 分配的公网域名
+
+代理代码入口在：
+
+- [proxy-server/server.js](C:/Users/陈铃/Documents/Codex/2026-05-12/files-mentioned-by-the-user-f76aaebcc10b10007caea90579a2dfa5-4/target_repo/proxy-server/server.js)
 
 ---
 
-## 本地运行
+## 本地运行补充
 
-## 前端本地运行
+## 前端本地 H5 运行
 
 你可以在仓库根目录准备一个 `.env`：
 
@@ -146,7 +169,9 @@ https://xxxx.up.railway.app
 VITE_API_BASE_URL=https://你的代理域名/api/bizhi
 ```
 
-然后按 `uni-app` 的 H5 方式运行。
+示例见：
+
+- [.env.example](C:/Users/陈铃/Documents/Codex/2026-05-12/files-mentioned-by-the-user-f76aaebcc10b10007caea90579a2dfa5-4/target_repo/.env.example)
 
 ## 代理本地运行
 
@@ -163,7 +188,7 @@ node server.js
 http://localhost:8787
 ```
 
-完整代理示例变量见：
+代理变量示例见：
 
 - [proxy-server/.env.example](C:/Users/陈铃/Documents/Codex/2026-05-12/files-mentioned-by-the-user-f76aaebcc10b10007caea90579a2dfa5-4/target_repo/proxy-server/.env.example)
 
@@ -172,42 +197,31 @@ http://localhost:8787
 ## 项目结构
 
 - `src/`：前端源码
-- `.github/workflows/deploy.yml`：GitHub Pages 自动部署 workflow
 - `proxy-server/`：Node 代理服务
-- `docs/uniapp-github-cicd-pages-sop.md`：完整部署 SOP 与底层原理博客
+- `.github/workflows/deploy.yml`：GitHub Pages 自动部署工作流
+- `docs/uniapp-github-cicd-pages-sop.md`：完整 SOP 与底层技术分析
 
 ---
 
-## 为什么不能只部署静态页面
+## 为什么 H5 需要代理
 
-这个项目虽然前端最终是静态产物，但运行时仍然依赖外部 API。
+这个项目虽然最终前端会构建成静态页面，但页面运行时仍然依赖外部 API。
 
-原接口：
+上游接口：
 
 - `https://tea.qingnian8.com/api/bizhi`
 
-在浏览器环境下不返回可用的 CORS 允许头，所以：
+不对 GitHub Pages 浏览器环境返回可用的 CORS 允许头，所以：
 
-- 页面壳子可以打开
-- 但浏览器会拦截接口数据
+- 页面外壳可以打开
+- 但浏览器会拦截数据请求
 
-这就是为什么项目最终需要：
+因此线上版本最终采用的是：
 
 - GitHub Pages 托管前端
 - Railway 托管代理
 
-如果你想看完整技术分析，请直接看：
+如果你想看完整 SOP、底层原理、以及它和普通静态页面部署的本质差异，请看：
 
 - [docs/uniapp-github-cicd-pages-sop.md](C:/Users/陈铃/Documents/Codex/2026-05-12/files-mentioned-by-the-user-f76aaebcc10b10007caea90579a2dfa5-4/target_repo/docs/uniapp-github-cicd-pages-sop.md)
-
----
-
-## 相关文件
-
-- 前端请求入口：
-  [src/utils/request.js](C:/Users/陈铃/Documents/Codex/2026-05-12/files-mentioned-by-the-user-f76aaebcc10b10007caea90579a2dfa5-4/target_repo/src/utils/request.js)
-- GitHub Pages workflow：
-  [.github/workflows/deploy.yml](C:/Users/陈铃/Documents/Codex/2026-05-12/files-mentioned-by-the-user-f76aaebcc10b10007caea90579a2dfa5-4/target_repo/.github/workflows/deploy.yml)
-- 代理服务入口：
-  [proxy-server/server.js](C:/Users/陈铃/Documents/Codex/2026-05-12/files-mentioned-by-the-user-f76aaebcc10b10007caea90579a2dfa5-4/target_repo/proxy-server/server.js)
 
